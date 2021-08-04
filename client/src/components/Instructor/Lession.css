@@ -1,0 +1,11 @@
+.lession {
+    border: 1px dashed pink;
+    background-color: lightyellow;
+    margin: 20px 10px 10px 20px;
+    padding: 20px;
+}
+
+.lession-content {
+    margin: 20px 10px 10px 0px;
+    padding: 2px;
+}

@@ -1,0 +1,250 @@
+import axios from 'axios';
+import {
+    REGISTER_SUCCESS,
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    BECOME_AN_INSTRUCTOR_SUCCESS,
+    LOGOUT_SUCCESS,
+    LOAD_USERS_SUCCESS,
+    LOAD_AUTHENTICATED_USER_FAILURE,
+    LOAD_AUTHENTICATED_USER_SUCCESS,
+    LOAD_SINGLE_USER_SUCCESS,
+    DELETE_USER_SUCCESS,
+    UPDATE_USER_PROFILE_SUCCESS,
+    UPDATE_ADMIN_PROFILE_SUCCESS
+} from './actionTypes';
+
+export const loadUserSuccess = (data) => {
+    return {
+        type: LOAD_USERS_SUCCESS,
+        payload: data
+    }
+}
+
+export const loadSingleUserSuccess = (data) => {
+    return {
+        type: LOAD_SINGLE_USER_SUCCESS,
+        payload: data
+    }
+}
+
+export const loadUser = () => {
+    return (dispatch) => {
+        axios.get('http://localhost:3004/api/users')
+            .then(res => {
+                //alert('loaded');
+                //console.log(res.data);
+                dispatch(loadUserSuccess(res.data));
+            }).catch(error => {
+
+            });
+    }
+}
+
+export const deleteUserSuccess = (userID) => {
+    return {
+        type: DELETE_USER_SUCCESS,
+        payload: userID
+    }
+}
+
+export const deleteUser = (userID) => {
+    return (dispatch) => {
+        axios.delete('http://localhost:3004/api/users/'+userID)
+            .then(res => {
+                dispatch(deleteUserSuccess(userID));
+            }).catch(error => {
+
+            });
+    }
+}
+
+export const updateAdminProfileSuccess = (data) => {
+    return {
+        type: UPDATE_ADMIN_PROFILE_SUCCESS,
+        payload : data
+    }
+}
+
+export const updateAdminProfile = (profile) => {
+    return (dispatch) => {
+        axios.put('http://localhost:3004/api/update_admin_profile',profile)
+            .then(res => {
+                //console.log(res.data);
+                dispatch(updateAdminProfileSuccess(res.data.data));
+            }).catch(error => {
+
+            });
+    }
+}
+
+export const becomeAnInstructorSuccess = (data) => {
+    return {
+        type: BECOME_AN_INSTRUCTOR_SUCCESS,
+        payload : data
+    }
+}
+
+export const becomeAnInstructor = (id) => {
+    return (dispatch) => {
+        axios.put('http://localhost:3004/api/users/become_instructor/'+id,null,{withCredentials: true})
+            .then(res => {
+                //console.log('after calling api become instructor...');
+                //console.log(res.data);
+                dispatch(becomeAnInstructorSuccess(res.data));
+            }).catch(error => {
+
+            });
+    }
+}
+
+export const getSingleUserInfo = (id) => {
+    return (dispatch) => {
+        axios.get('http://localhost:3004/api/users/'+id,{withCredentials: true})
+            .then(res => {
+                //console.log('after calling api become instructor...');
+                //console.log(res.data);
+                dispatch(loadSingleUserSuccess(res.data));
+            }).catch(error => {
+
+            });
+    }
+}
+
+export const updateUserProfileSuccess = (id,data) => {
+    return {
+        type: UPDATE_USER_PROFILE_SUCCESS,
+        id,
+        payload : data
+    }
+}
+
+export const updateUserProfile = (id,profile) => {
+    return (dispatch) => {
+        axios.put('http://localhost:3004/api/users/'+id,profile,{withCredentials: true})
+            .then(res => {
+                console.log('updateUserProfile action.......');
+                console.log(res.data);
+                dispatch(updateUserProfileSuccess(id,res.data));
+            }).catch(error => {
+
+            });
+    }
+}
+
+export const loginSuccess = (data) => {
+    return {
+        type: LOGIN_SUCCESS,
+        payload : data
+    }
+}
+
+export const loginFailure = (data) => {
+    return {
+        type: LOGIN_FAILURE,
+        payload : data
+    }
+}
+
+export const login = (user) => {
+    //{withCredentials: true} will allow to save sesssion cookies c_auth in browser
+    return (dispatch) => {
+        const request = axios.post('http://localhost:3004/api/login/',user,{withCredentials: true})
+            .then(res => {
+                console.log('request after login:');
+                console.log(res.data);
+                if(res.data.success) {
+                    dispatch(loginSuccess(res.data));
+                }
+                else{
+                    dispatch(loginFailure(res.data.message));
+                }
+            })
+            
+            .catch(error => {
+
+            });
+            
+    }
+}
+
+export const registerSuccess = (data) => {
+    return {
+        type: REGISTER_SUCCESS,
+        payload : data
+    }
+}
+
+export const register = (user) => {
+    return (dispatch) => {
+        const request = axios.post('http://localhost:3004/api/register/',user,{withCredentials: true})
+            .then(res => res.data)
+            .catch(error => {
+
+            });
+            console.log('request after register:');
+            console.log(request);
+            dispatch(registerSuccess(request));
+    }
+}
+
+export const logoutSuccess = (data) => {
+    return {
+        type: LOGOUT_SUCCESS,
+        payload : data
+    }
+}
+
+export const logout = (abc) => {
+    return (dispatch) => {
+        const request = axios.get('http://localhost:3004/api/logout/',{withCredentials: true})
+            .then(res => res.data)
+            .catch(error => {
+
+            });
+            console.log('request after logout:');
+            console.log(request);
+            dispatch(logoutSuccess(request));
+    }
+}
+
+export const loadAuthenticatedUserSuccess = (authenticateSuccess,data) => {
+    console.log('loadAuthenticatedUserSuccess...');
+    console.log(data);
+    return {
+        type: LOAD_AUTHENTICATED_USER_SUCCESS,
+        authenticateSuccess:authenticateSuccess,
+        payload: data
+    }
+}
+
+export const loadAuthenticatedUserFailure = (authenticateSuccess,data) => {
+    console.log('loadAuthenticatedUserFailure...');
+    console.log(data);
+    return {
+        type: LOAD_AUTHENTICATED_USER_FAILURE,
+        authenticateSuccess:authenticateSuccess,
+        payload: data
+    }
+}
+
+export const loadAuthenticatedUser = () => {
+    return (dispatch) => {
+        axios.get('http://localhost:3004/api/users/authenticate/',{withCredentials: true})
+            .then(res => {
+                //alert('loaded1222222222');
+                console.log('loadAuthenticatedUser action ...');
+                console.log(res.data);
+                if(res.data.success) {
+                    dispatch(loadAuthenticatedUserSuccess(true,res.data));
+                }
+                else{
+                    dispatch(loadAuthenticatedUserFailure(false,res.data.message));
+                }
+            }).catch(error => {
+                console.log('error');
+                console.log(error);
+                dispatch(loadAuthenticatedUserFailure(false,error.message));
+            });
+    }
+}
